@@ -23,7 +23,7 @@
   <div class="">
     <div>Messages</div>
        <div v-for="item in messages" :key="item._id" >
-          <li class="py-1 flex w-full bg-gray-100 px-3 border border-gray-400 mb-3" style="min-height:30px"    >     
+          <li class="py-1 flex w-full bg-gray-100 px-3 border border-gray-400 mb-3" style="min-height:30px">     
                 <div class="mr-4 font-semibold">{{item.name}} : </div>
                 <div>{{item.message}}</div>
           </li>
@@ -53,7 +53,7 @@ export default {
   name: 'IndexPage',
   data(){
     return {
-      name: "Public",
+      name: "Timothy",
       message: 'Hi Everyone',
       messages : [],
       socketid: '',
@@ -61,20 +61,12 @@ export default {
       room: '',
       roomToJoin: '',
       roomsIjoined: '',
-      users: [
-        {
-          name: 'Timothy',
-          role: 'admin'
-        },
-        {
-          name: 'Manos',
-          role: 'user'
-        }, 
-        {
-          name: 'Banjo',
-          role: 'user'
-        }
-      ]
+      users: {
+        Timothy: 'admin',
+        Manos: 'user',
+        Tooni: 'user',
+        Banjo: 'user',
+      }
     }
   },
   async mounted(){
@@ -90,6 +82,7 @@ export default {
       socket.on('message', (message)=>{
       this.messages.push(message)
       console.log('recieved', message)
+      // console.log({msgs:this.messages})
       })
 
     })
@@ -110,20 +103,20 @@ export default {
       this.room = ''
     },
     send(){
-        // if(this.name === 'Timothy'){
-          
-        // }else{
-
-        // }
-
+      console.log('role', this.users[this.name])
       let data = {name: this.name, message: this.message, room: this.room}
       socket.emit('input', { ...data})
-      // console.log('message sent', data)
     },
     joinRoom(){
-      this.roomsIjoined += ` ${this.roomToJoin}`
-      console.log('join', this.roomToJoin)
-      socket.emit('join-room', this.roomToJoin)
+      console.log({roooom: this.name })
+      this.roomsIjoined += ` ${this.name}`
+     
+        if(this.users[this.name] == 'admin'){
+          //array of all rooms: All the names that arent admins
+           socket.emit('join-room', 'admin')
+        }else if(this.users[this.name] == 'user'){
+           socket.emit('join-room', this.name)
+        }
     }
   }
 }
